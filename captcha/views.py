@@ -3,6 +3,8 @@ from captcha.models import CaptchaStore
 from cStringIO import StringIO
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
+from django.core.urlresolvers import reverse
+import simplejson
 import os
 import random
 import re
@@ -101,3 +103,15 @@ def captcha_audio(request, key):
             os.unlink(path)
             return response
     raise Http404
+    
+    
+def captcha_ajax_reload(request):
+    if request.method == 'POST' and request.is_ajax():
+        challenge, response = settings.get_challenge()()
+        store = CaptchaStore.objects.create(challenge=challenge, response=response)
+        data = {
+            'key': store.hashkey,
+            'image': reverse('captcha-image', args=[store.hashkey]),
+        }
+        return HttpResponse(simplejson.dumps(data), content_type="application/javascript; charset=utf-8")
+    return HttpResponse('')
