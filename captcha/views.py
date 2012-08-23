@@ -4,7 +4,7 @@ from cStringIO import StringIO
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
-import simplejson
+from django.utils import simplejson
 import os
 import random
 import re
